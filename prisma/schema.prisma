@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  username      String
+  password      String
+  walletBalance Float          @default(0)
+  role          String?
+  claimRequests ClaimRequest[]
+}
+
+model UserAttendance {
+  id          String   @id @default(cuid())
+  username    String
+  date        DateTime
+  loginTime   String?
+  logoutTime  String?
+  loginBonus  Int      @default(0)
+  logoutBonus Int      @default(0)
+  claimed     Boolean  @default(false)
+
+  @@unique([username, date])
+}
+
+model Claim {
+  id        Int      @id @default(autoincrement())
+  username  String
+  date      DateTime
+  morning   Int
+  evening   Int
+  month     String
+  total     Int
+  claimedAt DateTime @default(now())
+}
+
+model UserWallet {
+  id               String @id @default(cuid())
+  userId           String @unique
+  totalEligible    Int    @default(0)
+  totalClaimed     Int    @default(0)
+  remainingBalance Int    @default(0)
+}
+
+model ClaimMonth {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  month     String
+  amount    Int
+  createdAt DateTime @default(now())
+
+  @@unique([userId, month], name: "userId_month")
+}
+
+model ClaimRequest {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  amount    Float
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model ApprovedClaim {
+  id        String   @id @default(cuid())
+  username  String
+  month     String
+  total     Int
+  createdAt DateTime @default(now())
+}

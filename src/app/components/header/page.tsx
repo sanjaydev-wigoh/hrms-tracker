@@ -1,7 +1,7 @@
 'use client'
 
 import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import Sidebar from "../sidebar/page";
+// import Sidebar from "../sidebar/page";
 
 export default function Header() {
   return (
@@ -30,7 +30,7 @@ export default function Header() {
           </SignedIn>
            
         </div>
-       <Sidebar/>
+       {/* <Sidebar/> */}
       </nav>
     </div>
   );
